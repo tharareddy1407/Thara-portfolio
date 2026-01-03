@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Map Portfolio (Fast)</title>
+  <title>Map Portfolio (Fast + Stable)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-  <!-- MapLibre (FREE WebGL map) -->
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
@@ -83,11 +82,7 @@
       }
     }
 
-    /* travel marker (DOM element on top of WebGL) */
-    .travelMarker{
-      width: 1px; height: 1px;
-      pointer-events: none;
-    }
+    .travelMarker{ width:1px; height:1px; pointer-events:none; }
     .travelEmoji{
       font-size: 28px;
       transform: translate(-50%, -50%);
@@ -118,23 +113,27 @@
   <div id="map"></div>
 
   <script>
-    // ----------------- FREE BASEMAP STYLES (no API key) -----------------
-    // CARTO vector style JSON (free, no key)
+    // Free CARTO vector styles (no API key)
     const STYLE_LIGHT = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
     const STYLE_DARK  = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
-    // ----------------- HELPERS -----------------
-    // MapLibre uses [lng, lat]. This fixes if you accidentally put [lat, lng]
+    // USA bounds (rough)
+    const USA_BOUNDS = [
+      [-125.0, 24.5],  // SW [lng,lat]
+      [-66.5,  49.8]   // NE [lng,lat]
+    ];
+
+    // Normalize input in case you ever swap lat/lng
     function normalizeLngLat(ll){
-      let a = Number(ll[0]), b = Number(ll[1]); // maybe lng,lat OR lat,lng
-      const looksLikeLatLng = (Math.abs(a) <= 90 && Math.abs(b) > 90);
-      if (looksLikeLatLng) [a,b] = [b,a]; // swap to lng,lat
+      let a = Number(ll[0]), b = Number(ll[1]);
+      // if looks like [lat,lng] => swap
+      if (Math.abs(a) <= 90 && Math.abs(b) > 90) [a,b] = [b,a];
       a = Math.max(-180, Math.min(180, a));
       b = Math.max(-90,  Math.min(90,  b));
       return [a,b];
     }
 
-    function densify(from, to, steps = 260){
+    function densify(from, to, steps = 280){
       const pts = [];
       for (let i=0; i<=steps; i++){
         const t = i/steps;
@@ -148,13 +147,7 @@
       return lonDiff > 18 ? "✈️" : "🚗";
     }
 
-    // USA bounds (rough)
-    const USA_BOUNDS = [
-      [-125.0, 24.5],  // SW [lng,lat]
-      [-66.5,  49.8]   // NE [lng,lat]
-    ];
-
-    // ----------------- DATA -----------------
+    // Data
     const places = {
       resume:     { name:"Resume",      city:"Denver, CO",      ll: normalizeLngLat([-104.9903, 39.7392]), color:"#3498db",
         html:`<ul><li>Highlights</li><li>Download link</li></ul>` },
@@ -171,7 +164,7 @@
         </ul>` }
     };
 
-    // ----------------- PANEL -----------------
+    // Panel
     const panel = document.getElementById("panel");
     const panelTitle = document.getElementById("panelTitle");
     const panelMeta  = document.getElementById("panelMeta");
@@ -186,7 +179,7 @@
       panel.style.display = "block";
     }
 
-    // ----------------- MAP INIT -----------------
+    // Map
     let isDark = false;
     const map = new maplibregl.Map({
       container: "map",
@@ -195,8 +188,7 @@
       zoom: 4.2,
       minZoom: 4,
       maxZoom: 10,
-      maxBounds: USA_BOUNDS,
-      attributionControl: true
+      maxBounds: USA_BOUNDS
     });
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-left");
@@ -204,42 +196,97 @@
     window.addEventListener("resize", () => map.resize());
     window.addEventListener("orientationchange", () => setTimeout(() => map.resize(), 150));
 
-    // ----------------- SOURCES + LAYERS -----------------
+    // Sources/Layers
     const DEST_SOURCE = "destinations";
     const ROUTE_SOURCE = "route";
 
-    function buildDestGeoJSON(){
+    function destGeoJSON(){
       return {
-        type: "FeatureCollection",
+        type:"FeatureCollection",
         features: Object.entries(places).map(([key,p]) => ({
           type:"Feature",
-          geometry:{ type:"Point", coordinates: p.ll },
+          geometry:{ type:"Point", coordinates:p.ll },
           properties:{ key, name:p.name, city:p.city, color:p.color }
         }))
       };
     }
 
-    function setRoute(from, to){
-      const geo = {
-        type:"FeatureCollection",
-        features:[{
-          type:"Feature",
-          geometry:{ type:"LineString", coordinates:[from, to] },
-          properties:{}
-        }]
-      };
-      map.getSource(ROUTE_SOURCE).setData(geo);
+    function ensureLayers(){
+      // Sources
+      if (!map.getSource(DEST_SOURCE)) {
+        map.addSource(DEST_SOURCE, { type:"geojson", data: destGeoJSON() });
+      } else {
+        map.getSource(DEST_SOURCE).setData(destGeoJSON());
+      }
+
+      if (!map.getSource(ROUTE_SOURCE)) {
+        map.addSource(ROUTE_SOURCE, {
+          type:"geojson",
+          data:{ type:"FeatureCollection", features:[{
+            type:"Feature",
+            geometry:{ type:"LineString", coordinates:[places.resume.ll, places.resume.ll] },
+            properties:{}
+          }]}
+        });
+      }
+
+      // Route
+      if (!map.getLayer("route-line")) {
+        map.addLayer({
+          id:"route-line",
+          type:"line",
+          source: ROUTE_SOURCE,
+          layout:{ "line-cap":"round", "line-join":"round" },
+          paint:{
+            "line-color":"#2f80ff",
+            "line-opacity":0.9,
+            "line-width":[
+              "interpolate", ["linear"], ["zoom"],
+              4, 2,
+              6, 4,
+              8, 6,
+              10, 8
+            ],
+            "line-dasharray":[2,2]
+          }
+        });
+      }
+
+      // Pins
+      if (!map.getLayer("dest-circles")) {
+        map.addLayer({
+          id:"dest-circles",
+          type:"circle",
+          source: DEST_SOURCE,
+          paint:{
+            "circle-color":["get","color"],
+            "circle-stroke-color":"#ffffff",
+            "circle-stroke-width":2,
+            "circle-radius":[
+              "interpolate", ["linear"], ["zoom"],
+              4, 6,
+              6, 8,
+              8, 10,
+              10, 12
+            ]
+          }
+        });
+      }
     }
 
-    // Dash “animation” (fast + stable): rotate between dash patterns
-    let dashTick = 0;
+    function setRoute(from, to){
+      const src = map.getSource(ROUTE_SOURCE);
+      if (!src) return;
+      src.setData({
+        type:"FeatureCollection",
+        features:[{ type:"Feature", geometry:{ type:"LineString", coordinates:[from, to] }, properties:{} }]
+      });
+    }
+
+    // Dash animation (interval) — ALWAYS single instance
     let dashTimer = null;
-    const dashPatterns = [
-      [2, 2],
-      [3, 2],
-      [4, 2],
-      [3, 3]
-    ];
+    let dashTick = 0;
+    const dashPatterns = [[2,2],[3,2],[4,2],[3,3]];
     function startDash(){
       stopDash();
       dashTimer = setInterval(() => {
@@ -254,7 +301,7 @@
       dashTimer = null;
     }
 
-    // ----------------- TRAVEL MARKER (DOM) -----------------
+    // Travel marker (DOM)
     const travelEl = document.createElement("div");
     travelEl.className = "travelMarker";
     const travelEmoji = document.createElement("div");
@@ -266,225 +313,193 @@
       .setLngLat(places.resume.ll)
       .addTo(map);
 
-    function rotateEmoji(from, to){
-      // angle based on lon/lat delta
-      const dx = to[0] - from[0];
-      const dy = to[1] - from[1];
+    function rotateEmoji(prev, cur){
+      const dx = cur[0] - prev[0];
+      const dy = cur[1] - prev[1];
       const angle = Math.atan2(dy, dx) * 180 / Math.PI;
       travelEmoji.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
     }
 
-    // ----------------- TRAVEL LOGIC (no freeze) -----------------
+    // ----------------- 🔥 STABILITY: TRAVEL CONTROLLER -----------------
+    const Travel = {
+      raf: null,
+      token: 0,
+      running: false,
+      resolve: null,
+
+      cancel(){
+        this.token++;
+        this.running = false;
+        if (this.raf) cancelAnimationFrame(this.raf);
+        this.raf = null;
+        stopDash();
+        if (this.resolve) { this.resolve(); this.resolve = null; }
+      },
+
+      run(from, to, durationMs){
+        this.cancel();
+        this.running = true;
+        const myToken = ++this.token;
+
+        startDash();
+        setRoute(from, to);
+
+        // Smooth camera (no fitBounds, avoids freezes)
+        map.easeTo({ center: to, duration: 650, zoom: Math.max(map.getZoom(), 5.2) });
+
+        const path = densify(from, to, 300);
+        const start = performance.now();
+        const last = path.length - 1;
+        const ease = t => 1 - Math.pow(1 - t, 3);
+
+        return new Promise((res) => {
+          this.resolve = res;
+
+          // Failsafe so it NEVER gets stuck
+          const failsafe = setTimeout(() => {
+            if (this.token === myToken) {
+              this.running = false;
+              stopDash();
+              this.resolve?.();
+              this.resolve = null;
+            }
+          }, durationMs + 1200);
+
+          const step = (now) => {
+            if (this.token !== myToken) { clearTimeout(failsafe); return; }
+            const t = Math.min((now - start) / durationMs, 1);
+            const idx = Math.min(Math.floor(ease(t) * last), last);
+
+            const cur = path[idx];
+            travelMarker.setLngLat(cur);
+            rotateEmoji(path[Math.max(idx-1,0)], cur);
+
+            if (t < 1) {
+              this.raf = requestAnimationFrame(step);
+            } else {
+              clearTimeout(failsafe);
+              this.raf = null;
+              this.running = false;
+              stopDash();
+              this.resolve?.();
+              this.resolve = null;
+            }
+          };
+
+          this.raf = requestAnimationFrame(step);
+        });
+      }
+    };
+
+    // Travel API (awaitable)
     let currentKey = "resume";
-    let animRaf = null;
-    let traveling = false;
 
-    function cancelTravel(){
-      if (animRaf) cancelAnimationFrame(animRaf);
-      animRaf = null;
-      traveling = false;
-    }
-
-    function travelTo(key){
+    async function travelTo(key){
       if (!places[key]) return;
 
-      // same pin: open panel
-      if (key === currentKey && !traveling) {
+      // same key → just open
+      if (key === currentKey && !Travel.running) {
         openPanel(key);
         return;
       }
 
-      // hard reset
-      cancelTravel();
-      stopDash();
-
-      traveling = true;
-
       const from = places[currentKey].ll;
       const to   = places[key].ll;
 
-      // update emoji type
       travelEmoji.textContent = chooseEmoji(from, to);
 
-      // set route line
-      setRoute(from, to);
-      startDash();
-
-      // smooth camera (stable, no fitBounds)
-      map.easeTo({
-        center: to,
-        duration: 700,
-        zoom: Math.max(map.getZoom(), 5)
-      });
-
-      // animate marker
-      const path = densify(from, to, 260);
-      const start = performance.now();
-      const duration = 1400;
-
-      const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
-
-      function frame(now){
-        const t = Math.min((now - start) / duration, 1);
-        const idx = Math.min(Math.floor(easeOutCubic(t) * (path.length - 1)), path.length - 1);
-
-        const pos = path[idx];
-        travelMarker.setLngLat(pos);
-
-        // rotate forward
-        rotateEmoji(path[Math.max(idx-1,0)], pos);
-
-        if (t < 1) {
-          animRaf = requestAnimationFrame(frame);
-        } else {
-          animRaf = null;
-          traveling = false;
-          currentKey = key;
-          openPanel(key);
-        }
-      }
-
-      // update currentKey early to avoid tour deadlocks
+      // Update currentKey early (prevents tour deadlocks)
       currentKey = key;
-      animRaf = requestAnimationFrame(frame);
+
+      await Travel.run(from, to, 1400);
+      openPanel(key);
     }
 
-    // ----------------- TOUR -----------------
+    // ----------------- 🔥 STABILITY: TOUR WAITS FOR TRAVEL -----------------
     const tourOrder = ["resume","projects","skills","experience","contact"];
     let tourOn = false;
-    let tourTimer = null;
+    let tourStopToken = 0;
+
+    async function startTour(){
+      tourOn = true;
+      document.getElementById("tourBtn").textContent = "⏸ Tour";
+      const my = ++tourStopToken;
+
+      // loop forever (until stopped), but always await travel
+      let i = 0;
+      while (tourOn && tourStopToken === my) {
+        const key = tourOrder[i % tourOrder.length];
+        i++;
+        await travelTo(key);
+
+        // small pause between stops (also cancellable)
+        await new Promise(r => setTimeout(r, 700));
+      }
+    }
 
     function stopTour(){
       tourOn = false;
+      tourStopToken++;
       document.getElementById("tourBtn").textContent = "▶ Tour";
-      if (tourTimer) clearTimeout(tourTimer);
-      tourTimer = null;
-    }
-    function startTour(){
-      tourOn = true;
-      document.getElementById("tourBtn").textContent = "⏸ Tour";
-      let i = 0;
-
-      const step = () => {
-        if (!tourOn) return;
-        if (traveling) {
-          tourTimer = setTimeout(step, 250);
-          return;
-        }
-        travelTo(tourOrder[i % tourOrder.length]);
-        i++;
-        tourTimer = setTimeout(step, 2200);
-      };
-      step();
+      Travel.cancel(); // stop any mid-flight to prevent stuck state
     }
 
-    document.getElementById("tourBtn").onclick = () => tourOn ? stopTour() : startTour();
+    document.getElementById("tourBtn").onclick = () => {
+      if (tourOn) stopTour();
+      else startTour();
+    };
 
-    // ----------------- THEME TOGGLE -----------------
-    document.getElementById("themeBtn").onclick = async () => {
+    // ----------------- Click pins (no duplicates) -----------------
+    function bindClickHandlersOnce(){
+      // Remove old handlers first (important after style reload)
+      map.off("click", "dest-circles", onPinClick);
+      map.off("mouseenter", "dest-circles", onEnter);
+      map.off("mouseleave", "dest-circles", onLeave);
+
+      map.on("click", "dest-circles", onPinClick);
+      map.on("mouseenter", "dest-circles", onEnter);
+      map.on("mouseleave", "dest-circles", onLeave);
+    }
+
+    function onPinClick(e){
+      stopTour();
+      const f = e.features && e.features[0];
+      if (!f) return;
+      const key = f.properties.key;
+      travelTo(key);
+    }
+    function onEnter(){ map.getCanvas().style.cursor = "pointer"; }
+    function onLeave(){ map.getCanvas().style.cursor = ""; }
+
+    // Theme toggle (re-add layers + rebind handlers safely)
+    document.getElementById("themeBtn").onclick = () => {
       isDark = !isDark;
       document.body.classList.toggle("dark", isDark);
       document.getElementById("themeBtn").textContent = isDark ? "☀️ Light" : "🌙 Dark";
 
-      // reload style (MapLibre requires re-adding layers after style change)
+      // Cancel travel/tour during style change (avoids deadlock)
+      stopTour();
+      Travel.cancel();
+
       const center = map.getCenter();
       const zoom = map.getZoom();
-
       map.setStyle(isDark ? STYLE_DARK : STYLE_LIGHT);
 
-      map.once("styledata", () => {
-        // restore and rebuild layers
+      map.once("load", () => {
+        ensureLayers();
+        bindClickHandlersOnce();
         map.jumpTo({ center, zoom });
-        initLayers();
+        // restore route (optional)
+        setRoute(places[currentKey].ll, places[currentKey].ll);
       });
     };
 
-    // ----------------- INIT LAYERS (reusable on style change) -----------------
-    function initLayers(){
-      // sources
-      if (!map.getSource(DEST_SOURCE)) {
-        map.addSource(DEST_SOURCE, { type:"geojson", data: buildDestGeoJSON() });
-      } else {
-        map.getSource(DEST_SOURCE).setData(buildDestGeoJSON());
-      }
-
-      if (!map.getSource(ROUTE_SOURCE)) {
-        map.addSource(ROUTE_SOURCE, {
-          type:"geojson",
-          data:{
-            type:"FeatureCollection",
-            features:[{ type:"Feature", geometry:{ type:"LineString", coordinates:[places.resume.ll, places.resume.ll] } }]
-          }
-        });
-      }
-
-      // route line
-      if (!map.getLayer("route-line")) {
-        map.addLayer({
-          id:"route-line",
-          type:"line",
-          source: ROUTE_SOURCE,
-          layout:{ "line-cap":"round", "line-join":"round" },
-          paint:{
-            "line-color":"#2f80ff",
-            "line-opacity":0.9,
-            // scales with zoom
-            "line-width":[
-              "interpolate", ["linear"], ["zoom"],
-              4, 2,
-              6, 4,
-              8, 6,
-              10, 8
-            ],
-            "line-dasharray":[2,2]
-          }
-        });
-      }
-
-      // pins
-      if (!map.getLayer("dest-circles")) {
-        map.addLayer({
-          id:"dest-circles",
-          type:"circle",
-          source: DEST_SOURCE,
-          paint:{
-            "circle-color":["get","color"],
-            "circle-stroke-color":"#ffffff",
-            "circle-stroke-width":2,
-            "circle-opacity":1,
-            // scales with zoom
-            "circle-radius":[
-              "interpolate", ["linear"], ["zoom"],
-              4, 6,
-              6, 8,
-              8, 10,
-              10, 12
-            ]
-          }
-        });
-      }
-
-      // click handler (pins)
-      map.on("click", "dest-circles", (e) => {
-        stopTour();
-        const f = e.features && e.features[0];
-        if (!f) return;
-        const key = f.properties.key;
-        travelTo(key);
-      });
-
-      // hover cursor
-      map.on("mouseenter", "dest-circles", () => map.getCanvas().style.cursor = "pointer");
-      map.on("mouseleave", "dest-circles", () => map.getCanvas().style.cursor = "");
-
-      // start at resume
-      setRoute(places.resume.ll, places.resume.ll);
-    }
-
+    // Init
     map.on("load", () => {
-      initLayers();
-      openPanel("resume");
+      ensureLayers();
+      bindClickHandlersOnce();
       map.easeTo({ center: places.resume.ll, zoom: 5.8, duration: 0 });
+      openPanel("resume");
     });
   </script>
 </body>

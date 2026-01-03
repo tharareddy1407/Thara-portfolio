@@ -2,49 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>USA Map Portfolio</title>
+  <title>Map Portfolio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
   <style>
     :root{
-      --bg: #ffffff;
-      --text: #111111;
-      --muted: #555555;
-      --card: #ffffff;
-      --shadow: 0 12px 30px rgba(0,0,0,.18);
-      --pill: #ffffff;
-      --pillText: #111111;
-      --border: rgba(0,0,0,.08);
+      --bg:#ffffff; --text:#111; --muted:#555; --card:#fff;
+      --shadow:0 12px 30px rgba(0,0,0,.18);
+      --pill:#fff; --pillText:#111; --border:rgba(0,0,0,.08);
     }
     body.dark{
-      --bg: #0b1220;
-      --text: #e7eefc;
-      --muted: rgba(231,238,252,.75);
-      --card: #121a2b;
-      --shadow: 0 12px 30px rgba(0,0,0,.55);
-      --pill: #121a2b;
-      --pillText: #e7eefc;
-      --border: rgba(255,255,255,.10);
+      --bg:#0b1220; --text:#e7eefc; --muted:rgba(231,238,252,.75); --card:#121a2b;
+      --shadow:0 12px 30px rgba(0,0,0,.55);
+      --pill:#121a2b; --pillText:#e7eefc; --border:rgba(255,255,255,.10);
     }
-
     html, body { height: 100%; margin: 0; background: var(--bg); }
     #map { height: 100vh; width: 100vw; }
 
-    /* Top bar (search + buttons) */
+    /* keep travel marker above lines */
+    .leaflet-overlay-pane { z-index: 400; }
+    .leaflet-marker-pane  { z-index: 650; }
+
     .topbar{
       position: fixed;
       top: env(safe-area-inset-top, 10px);
       left: 12px; right: 12px;
       z-index: 9999;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
+      display:flex; gap:10px;
+      align-items:center;
+      justify-content:space-between;
       font-family: Arial, sans-serif;
-      pointer-events: none;
+      pointer-events:none;
     }
-    .left, .right { display:flex; gap:10px; align-items:center; pointer-events:auto; flex-wrap: wrap; }
+    .left,.right{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; pointer-events:auto; }
     .pill{
       background: var(--pill);
       color: var(--pillText);
@@ -53,28 +43,12 @@
       box-shadow: var(--shadow);
       padding: 10px 12px;
       font-size: 14px;
-      text-decoration: none;
-      white-space: nowrap;
-      cursor: pointer;
-      user-select: none;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+      text-decoration:none;
     }
-    .pill:active{ transform: translateY(1px); }
 
-    .search{
-      display:flex; gap:8px; align-items:center;
-      padding: 8px 10px;
-    }
-    .search input{
-      border: none;
-      outline: none;
-      background: transparent;
-      color: var(--pillText);
-      width: 220px;
-      font-size: 14px;
-    }
-    .search small{ color: var(--muted); }
-
-    /* Panel */
     #panel{
       position: fixed;
       top: calc(env(safe-area-inset-top, 10px) + 64px);
@@ -89,47 +63,16 @@
       box-shadow: var(--shadow);
       border: 1px solid var(--border);
       font-family: Arial, sans-serif;
-      display: none;
-    }
-    #panel h3{ margin: 0 0 8px; font-size: 18px; }
-    #panel .close{
-      float:right; cursor:pointer; font-weight:bold;
-      font-size:18px; padding:4px 8px; border-radius:10px;
-      color: var(--text);
-    }
-    #panel .meta{ color: var(--muted); font-size: 13px; margin-bottom: 10px; }
-    #panel a{ color: inherit; }
-    #panel ul{ margin: 8px 0 0 18px; }
-
-    /* Timeline (only shown for Experience) */
-    #timelineWrap{
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
       display:none;
     }
-    #timelineHeader{
-      display:flex;
-      justify-content: space-between;
-      align-items:center;
-      margin-bottom: 8px;
-      color: var(--muted);
-      font-size: 12px;
+    #panel h3{ margin:0 0 8px; font-size:18px; }
+    #panel .close{
+      float:right; cursor:pointer; font-weight:700;
+      font-size:18px; padding:4px 8px; border-radius:10px;
     }
-    #timelineYear{
-      color: var(--text);
-      font-weight: 700;
-      font-size: 12px;
-    }
-    input[type="range"]{
-      width: 100%;
-      accent-color: #2d7ff9;
-    }
+    #panel .meta{ color: var(--muted); font-size:13px; margin-bottom:10px; }
 
-    /* Mobile bottom sheet */
     @media (max-width: 768px){
-      .topbar{ justify-content: center; }
-      .search input{ width: 160px; }
       #panel{
         left: 0; right: 0;
         top: auto; bottom: 0;
@@ -140,698 +83,303 @@
       }
     }
 
-    /* Leaflet controls below topbar */
-    .leaflet-top.leaflet-left{
-      margin-top: calc(env(safe-area-inset-top, 10px) + 72px);
-    }
+    .leaflet-top.leaflet-left{ margin-top: calc(env(safe-area-inset-top, 10px) + 72px); }
 
     .travel-emoji{
-      font-size: 24px;
+      font-size: 26px;
       transform: translate(-50%,-50%);
       will-change: transform;
+      pointer-events:none;
     }
 
-    /* Small KPI grid */
-    .kpis{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:10px;
-      margin-top: 10px;
+    .route-line{
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
-    .kpi{
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-      background: rgba(0,0,0,0.02);
-    }
-    body.dark .kpi{ background: rgba(255,255,255,0.04); }
-    .kpi .num{ font-size: 18px; font-weight: 800; }
-    .kpi .lbl{ font-size: 12px; color: var(--muted); margin-top: 4px; }
   </style>
 </head>
 
 <body>
-  <!-- Top controls -->
   <div class="topbar">
     <div class="left">
-      <div class="pill search">
-        🔎 <input id="searchBox" type="text" placeholder="Search: aws, spark, sql..." />
-        <small id="searchHint"></small>
-      </div>
       <div class="pill" id="tourBtn">▶ Tour</div>
-      <div class="pill" id="heatBtn">🔥 Heatmap</div>
-    </div>
-
-    <div class="right">
-      <div class="pill" id="modeBtn">👔 Recruiter</div>
       <div class="pill" id="themeBtn">🌙 Dark</div>
-      <a class="pill" href="https://github.com/YOUR_GITHUB" target="_blank" rel="noopener">GitHub</a>
-      <a class="pill" href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" rel="noopener">LinkedIn</a>
-      <a class="pill" href="resume.pdf" target="_blank" rel="noopener">Resume</a>
+    </div>
+    <div class="right">
+      <a class="pill" href="https://github.com/tharareddy1407" target="_blank" rel="noopener">GitHub</a>
     </div>
   </div>
 
-  <!-- Panel -->
   <div id="panel">
-    <span class="close" onclick="hidePanel()">×</span>
+    <span class="close" id="closePanel">×</span>
     <h3 id="panelTitle"></h3>
     <div class="meta" id="panelMeta"></div>
     <div id="panelBody"></div>
-
-    <!-- Timeline controls (Experience) -->
-    <div id="timelineWrap">
-      <div id="timelineHeader">
-        <span>Experience timeline</span>
-        <span id="timelineYear">—</span>
-      </div>
-      <input id="timeline" type="range" min="0" max="0" step="1" value="0" />
-    </div>
   </div>
 
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <script>
-    // ---------------- MAP ----------------
-    const map = L.map('map', {
-      zoomControl: true,
-      tap: true,
-      dragging: true,
-      scrollWheelZoom: false
-    }).setView([39.5, -98.35], 4);
+    // ---------- HELPERS (fix bad coordinates) ----------
+    function normalizeLatLng(ll){
+      if (!Array.isArray(ll) || ll.length !== 2) return [0,0];
+      let a = Number(ll[0]), b = Number(ll[1]);
 
-    // basemap toggles for dark mode
-    const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
-      maxZoom: 18
-    }).addTo(map);
+      // if "lat" looks like a longitude and "lng" looks like a latitude -> swap
+      // Example: [-118.24, 34.05] should become [34.05, -118.24]
+      const looksSwapped = (Math.abs(a) > 90 && Math.abs(b) <= 90);
+      if (looksSwapped) [a, b] = [b, a];
 
-    const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
-      maxZoom: 18
-    });
-
-    // ---------------- DATA ----------------
-    // Keywords power the Search feature
-    const places = {
-      projects: {
-        name: "Projects",
-        city: "Los Angeles, CA",
-        latlng: [34.0522, -118.2437],
-        keywords: ["projects","github","demo","etl","pipeline","airflow","dbt","spark","aws","sql","python"],
-        recruiterBody: `
-          <p><b>Impact-focused projects</b></p>
-          <ul>
-            <li>Built reliable data pipelines and automated reporting</li>
-            <li>Improved data quality and reduced manual effort</li>
-            <li>Delivered dashboards for faster decisions</li>
-          </ul>
-          <p><a target="_blank" rel="noopener" href="https://github.com/YOUR_GITHUB">Open GitHub</a></p>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="40">0</div><div class="lbl">Pipelines</div></div>
-            <div class="kpi"><div class="num" data-count="1200">0</div><div class="lbl">Datasets</div></div>
-            <div class="kpi"><div class="num" data-count="35">0</div><div class="lbl">% Cost ↓</div></div>
-          </div>
-        `,
-        engineerBody: `
-          <p><b>Featured work</b></p>
-          <ul>
-            <li>ETL/ELT: Python, Spark, Airflow, AWS Glue/Lambda</li>
-            <li>Streaming: Kafka/Kinesis style patterns, Spark Structured Streaming</li>
-            <li>Analytics: SQL models + BI dashboards</li>
-          </ul>
-          <p><a target="_blank" rel="noopener" href="https://github.com/YOUR_GITHUB">Open GitHub</a></p>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="99">0</div><div class="lbl">% SLA</div></div>
-            <div class="kpi"><div class="num" data-count="12">0</div><div class="lbl">Workflows</div></div>
-            <div class="kpi"><div class="num" data-count="8">0</div><div class="lbl">Tools</div></div>
-          </div>
-        `
-      },
-
-      resume: {
-        name: "Resume",
-        city: "Denver, CO",
-        latlng: [39.7392, -104.9903],
-        keywords: ["resume","cv","experience","summary","skills"],
-        recruiterBody: `
-          <p><b>Quick highlights</b></p>
-          <ul>
-            <li>Data pipelines and reporting that stakeholders trust</li>
-            <li>Strong ownership: requirements → delivery → support</li>
-            <li>Clear communication and measurable outcomes</li>
-          </ul>
-          <p><a target="_blank" rel="noopener" href="resume.pdf">Open Resume</a></p>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="3">0</div><div class="lbl">Key roles</div></div>
-            <div class="kpi"><div class="num" data-count="60">0</div><div class="lbl">% Faster</div></div>
-            <div class="kpi"><div class="num" data-count="25">0</div><div class="lbl">Partners</div></div>
-          </div>
-        `,
-        engineerBody: `
-          <p><b>Resume (technical)</b></p>
-          <ul>
-            <li>Python, SQL, Spark</li>
-            <li>AWS: S3, Glue, Lambda, Redshift</li>
-            <li>Orchestration + observability</li>
-          </ul>
-          <p><a target="_blank" rel="noopener" href="resume.pdf">Open Resume</a></p>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="7">0</div><div class="lbl">Systems</div></div>
-            <div class="kpi"><div class="num" data-count="15">0</div><div class="lbl">Dashboards</div></div>
-            <div class="kpi"><div class="num" data-count="30">0</div><div class="lbl">% Latency ↓</div></div>
-          </div>
-        `
-      },
-
-      skills: {
-        name: "Tech Skills",
-        city: "Dallas, TX",
-        latlng: [32.7767, -96.7970],
-        keywords: ["skills","aws","python","sql","spark","airflow","databricks","snowflake","powerbi","tableau"],
-        recruiterBody: `
-          <p><b>Core strengths</b></p>
-          <ul>
-            <li>Fast problem-solving + clean delivery</li>
-            <li>Data reliability, automation, and reporting</li>
-            <li>Collaboration with non-technical partners</li>
-          </ul>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="10">0</div><div class="lbl">Core skills</div></div>
-            <div class="kpi"><div class="num" data-count="5">0</div><div class="lbl">Cloud areas</div></div>
-            <div class="kpi"><div class="num" data-count="4">0</div><div class="lbl">BI tools</div></div>
-          </div>
-        `,
-        engineerBody: `
-          <p><b>Stack</b></p>
-          <ul>
-            <li>Python, SQL, Spark</li>
-            <li>AWS: S3, Glue, Lambda, Redshift</li>
-            <li>Airflow orchestration + monitoring</li>
-            <li>BI: Power BI / Tableau</li>
-          </ul>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="120">0</div><div class="lbl">SQL queries</div></div>
-            <div class="kpi"><div class="num" data-count="18">0</div><div class="lbl">Jobs</div></div>
-            <div class="kpi"><div class="num" data-count="6">0</div><div class="lbl">Services</div></div>
-          </div>
-        `
-      },
-
-      experience: {
-        name: "Experience",
-        city: "New York, NY",
-        latlng: [40.7128, -74.0060],
-        keywords: ["experience","timeline","roles","work","impact"],
-        recruiterBody: `
-          <p><b>Experience</b></p>
-          <p>Use the timeline slider below to explore roles and outcomes.</p>
-        `,
-        engineerBody: `
-          <p><b>Experience</b></p>
-          <p>Use the timeline slider below to explore roles, tech stack, and results.</p>
-        `
-      },
-
-      contact: {
-        name: "Contact Me",
-        city: "Atlanta, GA",
-        latlng: [33.7490, -84.3880],
-        keywords: ["contact","email","linkedin","github"],
-        recruiterBody: `
-          <p><b>Let’s connect</b></p>
-          <ul>
-            <li>Email: <a href="mailto:yourname@email.com">yourname@email.com</a></li>
-            <li>LinkedIn: <a target="_blank" rel="noopener" href="https://linkedin.com/in/YOUR_LINKEDIN">Profile</a></li>
-            <li>GitHub: <a target="_blank" rel="noopener" href="https://github.com/YOUR_GITHUB">Repos</a></li>
-          </ul>
-        `,
-        engineerBody: `
-          <p><b>Contact</b></p>
-          <ul>
-            <li>Email: <a href="mailto:yourname@email.com">yourname@email.com</a></li>
-            <li>GitHub: <a target="_blank" rel="noopener" href="https://github.com/YOUR_GITHUB">Source + Demos</a></li>
-            <li>LinkedIn: <a target="_blank" rel="noopener" href="https://linkedin.com/in/YOUR_LINKEDIN">Profile</a></li>
-          </ul>
-        `
-      }
-    };
-
-    // Timeline stops (2) – tie to slider
-    // Replace with your real roles/cities if you want.
-    const experienceStops = [
-      {
-        year: "2019–2020",
-        city: "Miami, FL",
-        latlng: [25.7617, -80.1918],
-        recruiterBody: `
-          <p><b>Role: Analyst / Ops</b></p>
-          <ul>
-            <li>Automated reporting and reduced manual checks</li>
-            <li>Improved data consistency for stakeholders</li>
-          </ul>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="20">0</div><div class="lbl">Reports</div></div>
-            <div class="kpi"><div class="num" data-count="45">0</div><div class="lbl">% Time ↓</div></div>
-            <div class="kpi"><div class="num" data-count="12">0</div><div class="lbl">Partners</div></div>
-          </div>
-        `,
-        engineerBody: `
-          <p><b>Role: Data / Reporting</b></p>
-          <ul>
-            <li>SQL + Excel automation, basic ETL patterns</li>
-            <li>Standardized metrics + reporting logic</li>
-          </ul>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="80">0</div><div class="lbl">SQL jobs</div></div>
-            <div class="kpi"><div class="num" data-count="10">0</div><div class="lbl">Pipelines</div></div>
-            <div class="kpi"><div class="num" data-count="3">0</div><div class="lbl">Systems</div></div>
-          </div>
-        `
-      },
-      {
-        year: "2021–2023",
-        city: "Charlotte, NC",
-        latlng: [35.2271, -80.8431],
-        recruiterBody: `
-          <p><b>Role: Data Engineering</b></p>
-          <ul>
-            <li>Scaled pipelines and improved data reliability</li>
-            <li>Delivered faster reporting for business users</li>
-          </ul>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="25">0</div><div class="lbl">Pipelines</div></div>
-            <div class="kpi"><div class="num" data-count="60">0</div><div class="lbl">% Faster</div></div>
-            <div class="kpi"><div class="num" data-count="18">0</div><div class="lbl">Consumers</div></div>
-          </div>
-        `,
-        engineerBody: `
-          <p><b>Role: Data Engineering</b></p>
-          <ul>
-            <li>Spark ETL + cloud storage + orchestration</li>
-            <li>Monitoring + retries + performance tuning</li>
-          </ul>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="1200">0</div><div class="lbl">Jobs/day</div></div>
-            <div class="kpi"><div class="num" data-count="30">0</div><div class="lbl">% Cost ↓</div></div>
-            <div class="kpi"><div class="num" data-count="99">0</div><div class="lbl">% SLA</div></div>
-          </div>
-        `
-      },
-      {
-        year: "2024–Now",
-        city: "Dallas, TX",
-        latlng: [32.7767, -96.7970],
-        recruiterBody: `
-          <p><b>Role: Senior (Current)</b></p>
-          <ul>
-            <li>Owned delivery end-to-end with measurable impact</li>
-            <li>Aligned stakeholders and improved speed of execution</li>
-          </ul>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="8">0</div><div class="lbl">Streams</div></div>
-            <div class="kpi"><div class="num" data-count="35">0</div><div class="lbl">% Cost ↓</div></div>
-            <div class="kpi"><div class="num" data-count="5">0</div><div class="lbl">Teams</div></div>
-          </div>
-        `,
-        engineerBody: `
-          <p><b>Role: Senior (Current)</b></p>
-          <ul>
-            <li>Python/Spark pipelines + cloud optimization</li>
-            <li>Governance + quality checks + observability</li>
-          </ul>
-          <div class="kpis">
-            <div class="kpi"><div class="num" data-count="1000">0</div><div class="lbl">Datasets</div></div>
-            <div class="kpi"><div class="num" data-count="12">0</div><div class="lbl">Workflows</div></div>
-            <div class="kpi"><div class="num" data-count="6">0</div><div class="lbl">Services</div></div>
-          </div>
-        `
-      }
-    ];
-
-    const pinColors = {
-      projects: "#e74c3c",
-      resume: "#3498db",
-      skills: "#2ecc71",
-      experience: "#9b59b6",
-      contact: "#f1c40f"
-    };
-
-    // ---------------- UI STATE ----------------
-    let viewMode = "recruiter"; // recruiter | engineer
-    let isDark = false;
-    let heatOn = false;
-    let tourOn = false;
-    let tourTimer = null;
-
-    // ---------------- PANEL ----------------
-    function openPanel(key, extraHtml = null){
-      const p = places[key];
-      document.getElementById('panelTitle').innerText = p.name;
-      document.getElementById('panelMeta').innerText = p.city;
-
-      const base = (viewMode === "recruiter") ? p.recruiterBody : p.engineerBody;
-      document.getElementById('panelBody').innerHTML = (extraHtml !== null) ? extraHtml : base;
-
-      document.getElementById('panel').style.display = 'block';
-
-      // timeline visible only when Experience is selected
-      const tw = document.getElementById('timelineWrap');
-      tw.style.display = (key === "experience") ? "block" : "none";
-
-      // animate counters if present
-      animateCountersInPanel();
+      // clamp
+      a = Math.max(-90, Math.min(90, a));
+      b = Math.max(-180, Math.min(180, b));
+      return [a, b]; // [lat, lng]
     }
 
-    function hidePanel(){
-      document.getElementById('panel').style.display = 'none';
+    function routeWeightForZoom(z){
+      if (z <= 4) return 2;
+      if (z === 5) return 3;
+      if (z === 6) return 4;
+      if (z === 7) return 5;
+      return 6; // 8+
     }
-
-    // KPI counters animation
-    function animateCountersInPanel(){
-      const nums = document.querySelectorAll('#panel .num[data-count]');
-      nums.forEach(el => {
-        const target = Number(el.getAttribute('data-count'));
-        const start = 0;
-        const dur = 900;
-        const t0 = performance.now();
-        function tick(now){
-          const t = Math.min((now - t0) / dur, 1);
-          const val = Math.round(start + (target - start) * (1 - Math.pow(1 - t, 3)));
-          el.textContent = val.toLocaleString();
-          if (t < 1) requestAnimationFrame(tick);
+    function dashArrayForZoom(z){
+      // smaller dashes when zoomed out
+      if (z <= 4) return "8 10";
+      if (z <= 6) return "10 10";
+      return "12 10";
+    }
+    function pinRadiusForZoom(z){
+      if (z <= 4) return 6;
+      if (z === 5) return 7;
+      if (z === 6) return 8;
+      return 10;
+    }
+    function densify(points, stepsPerSeg = 180){
+      const out = [];
+      for (let i=0; i<points.length-1; i++){
+        const a = points[i], b = points[i+1];
+        for (let s=0; s<stepsPerSeg; s++){
+          const t = s/stepsPerSeg;
+          out.push([a[0] + (b[0]-a[0])*t, a[1] + (b[1]-a[1])*t]);
         }
-        el.textContent = "0";
-        requestAnimationFrame(tick);
-      });
+      }
+      out.push(points[points.length-1]);
+      return out;
     }
-
-    // ---------------- TRAVEL ANIMATION (CAR/PLANE) ----------------
-    // Switch emoji based on distance (car for short, plane for long)
-    function chooseTravelEmoji(from, to){
+    function chooseEmoji(from, to){
       const lonDiff = Math.abs(from[1] - to[1]);
       return (lonDiff > 18) ? "✈️" : "🚗";
     }
 
+    // ---------- MAP ----------
+    const usaBounds = L.latLngBounds([[24.5, -125.0], [49.8, -66.5]]);
+
+    const map = L.map('map', {
+      zoomControl: true,
+      worldCopyJump: false,
+      maxBounds: usaBounds.pad(0.15),
+      maxBoundsViscosity: 1.0, // hard lock
+      minZoom: 4,              // prevents zooming to world
+      maxZoom: 10
+    }).fitBounds(usaBounds, { animate:false });
+
+    // noWrap prevents repeated world tiles
+    const lightTiles = L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      { attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:18, noWrap:true }
+    ).addTo(map);
+
+    const darkTiles = L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      { attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:18, noWrap:true }
+    );
+
+    function refreshMapSize(){ setTimeout(() => map.invalidateSize(true), 200); }
+    window.addEventListener('resize', refreshMapSize);
+    window.addEventListener('orientationchange', refreshMapSize);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshMapSize(); });
+
+    // ---------- DATA ----------
+    const places = {
+      resume:     { name:"Resume",      city:"Denver, CO",      latlng: normalizeLatLng([39.7392, -104.9903]), color:"#3498db",
+        html:`<ul><li>Highlights</li><li>Download link</li></ul>` },
+      projects:   { name:"Projects",    city:"Los Angeles, CA", latlng: normalizeLatLng([34.0522, -118.2437]), color:"#e74c3c",
+        html:`<ul><li>Map Portfolio</li><li>Other projects</li></ul>` },
+      skills:     { name:"Tech Skills", city:"Dallas, TX",      latlng: normalizeLatLng([32.7767, -96.7970]),  color:"#2ecc71",
+        html:`<ul><li>Python</li><li>SQL</li><li>AWS</li></ul>` },
+      experience: { name:"Experience",  city:"New York, NY",    latlng: normalizeLatLng([40.7128, -74.0060]),  color:"#9b59b6",
+        html:`<ul><li>Role 1</li><li>Role 2</li></ul>` },
+      contact:    { name:"Contact Me",  city:"Atlanta, GA",     latlng: normalizeLatLng([33.7490, -84.3880]),  color:"#f1c40f",
+        html:`<ul>
+          <li>Email: <a href="mailto:yourname@email.com">yourname@email.com</a></li>
+          <li>GitHub: <a target="_blank" rel="noopener" href="https://github.com/tharareddy1407">Profile</a></li>
+        </ul>` }
+    };
+
+    // ---------- PANEL ----------
+    const panel = document.getElementById("panel");
+    const panelTitle = document.getElementById("panelTitle");
+    const panelMeta = document.getElementById("panelMeta");
+    const panelBody = document.getElementById("panelBody");
+    document.getElementById("closePanel").addEventListener("click", () => {
+      panel.style.display = "none";
+      refreshMapSize();
+    });
+    function openPanel(key){
+      const p = places[key];
+      panelTitle.textContent = p.name;
+      panelMeta.textContent = p.city;
+      panelBody.innerHTML = p.html;
+      panel.style.display = "block";
+      refreshMapSize();
+    }
+
+    // ---------- DASH ANIMATION ----------
+    let dashOffset = 0;
+    let dashAnimId = null;
+    function stopDashAnimation(){
+      if (dashAnimId) cancelAnimationFrame(dashAnimId);
+      dashAnimId = null;
+    }
+    function startDashAnimation(polyline){
+      stopDashAnimation();
+      const el = polyline.getElement();
+      if (!el) return;
+      function tick(){
+        dashOffset = (dashOffset + 1) % 22;
+        el.style.strokeDashoffset = String(dashOffset);
+        dashAnimId = requestAnimationFrame(tick);
+      }
+      dashAnimId = requestAnimationFrame(tick);
+    }
+
+    // ---------- TRAVEL ----------
     const travelIcon = L.divIcon({
-      className: "",
-      html: `<div id="travelIcon" class="travel-emoji">🚗</div>`,
-      iconSize: [0, 0]
+      className:"",
+      html:`<div id="travelIcon" class="travel-emoji">🚗</div>`,
+      iconSize:[0,0]
     });
 
     let currentKey = "resume";
-    let travelMarker = L.marker(places[currentKey].latlng, { icon: travelIcon }).addTo(map);
+    let travelMarker = L.marker(places[currentKey].latlng, { icon: travelIcon, interactive:false }).addTo(map);
 
     let routeLine = null;
     let animId = null;
+    let isTraveling = false;
 
-    function buildRoute(from, to){
-      // simple curve midpoint
-      const mid = [(from[0] + to[0]) / 2 + 1.0, (from[1] + to[1]) / 2];
-      return [from, mid, to];
+    function cancelTravel(){
+      if (animId) cancelAnimationFrame(animId);
+      animId = null;
+      isTraveling = false;
     }
 
-    function densify(points, totalSteps = 210){
-      const out = [];
-      const segments = points.length - 1;
-      const stepsPerSeg = Math.max(30, Math.floor(totalSteps / segments));
-      for (let i = 0; i < segments; i++){
-        const a = points[i], b = points[i+1];
-        for (let s = 0; s < stepsPerSeg; s++){
-          const t = s / stepsPerSeg;
-          out.push([a[0] + (b[0]-a[0]) * t, a[1] + (b[1]-a[1]) * t]);
-        }
-      }
-      out.push(points[points.length - 1]);
-      return out;
-    }
-
-    function rotateIcon(path, idx){
+    function rotateEmoji(path, idx){
       const a = path[idx];
-      const b = path[Math.min(idx + 1, path.length - 1)];
-      const dx = b[1] - a[1];
-      const dy = b[0] - a[0];
-      const angle = Math.atan2(dx, dy) * (180 / Math.PI);
+      const b = path[Math.min(idx+1, path.length-1)];
+      const dx = b[1]-a[1];
+      const dy = b[0]-a[0];
+      const angle = Math.atan2(dx, dy) * (180/Math.PI);
       const el = document.getElementById("travelIcon");
       if (el) el.style.transform = `translate(-50%,-50%) rotate(${angle}deg)`;
     }
 
-    function animateAlong(path, durationMs, onDone){
-      const start = performance.now();
+    function animateAlong(path, durationMs, done){
+      const t0 = performance.now();
+      const ease = t => 1 - Math.pow(1 - t, 3);
+      const lastIdx = path.length - 1;
+
       function frame(now){
-        const t = Math.min((now - start) / durationMs, 1);
-        const idx = Math.floor(t * (path.length - 1));
+        const t = Math.min((now - t0)/durationMs, 1);
+        const idx = Math.min(Math.floor(ease(t) * lastIdx), lastIdx);
         travelMarker.setLatLng(path[idx]);
-        rotateIcon(path, idx);
+        rotateEmoji(path, idx);
         if (t < 1) animId = requestAnimationFrame(frame);
-        else { animId = null; onDone?.(); }
+        else { animId = null; done?.(); }
       }
       animId = requestAnimationFrame(frame);
     }
 
-    function travelTo(targetKey){
-      if (targetKey === currentKey){
-        openPanel(targetKey);
-        map.flyTo(places[targetKey].latlng, 5, { duration: 0.6 });
+    function travelTo(key){
+      if (!places[key]) return;
+
+      // same dot -> open panel (no travel)
+      if (key === currentKey){
+        openPanel(key);
         return;
       }
 
-      if (animId) cancelAnimationFrame(animId);
+      cancelTravel();
+      isTraveling = true;
 
       const from = places[currentKey].latlng;
-      const to = places[targetKey].latlng;
+      const to   = places[key].latlng;
+      currentKey = key;
 
-      // set emoji based on distance
-      const el = document.getElementById("travelIcon");
-      if (el) el.textContent = chooseTravelEmoji(from, to);
+      const iconEl = document.getElementById("travelIcon");
+      if (iconEl) iconEl.textContent = chooseEmoji(from, to);
 
-      const route = buildRoute(from, to);
+      const route = [from, to]; // straight route for stability
 
       if (routeLine) map.removeLayer(routeLine);
       routeLine = L.polyline(route, {
-        weight: 5,
-        opacity: 0.85,
-        dashArray: "8,10"
+        weight: routeWeightForZoom(map.getZoom()),
+        opacity: 0.95,
+        dashArray: dashArrayForZoom(map.getZoom()),
+        className: "route-line"
       }).addTo(map);
 
-      map.flyToBounds(routeLine.getBounds().pad(0.25), { duration: 0.8 });
+      // keep map in USA while fitting route
+      map.fitBounds(routeLine.getBounds().pad(0.25), { animate:true, duration: 0.7 });
 
-      const path = densify(route, 240);
-      animateAlong(path, 1700, () => {
-        currentKey = targetKey;
-        openPanel(targetKey);
-        map.flyTo(places[targetKey].latlng, 5, { duration: 0.6 });
+      // animate exactly on same route points
+      const path = densify(route, 220);
+      setTimeout(() => startDashAnimation(routeLine), 60);
+
+      animateAlong(path, 1500, () => {
+        isTraveling = false;
+        openPanel(key);
       });
     }
 
-    // ---------------- PINS ----------------
-    const pinLayers = {}; // store markers for search highlight
+    // ---------- PINS ----------
+    const pins = {};
+    function applyPinSizing(){
+      const z = map.getZoom();
+      Object.values(pins).forEach(m => m.setStyle({ radius: pinRadiusForZoom(z) }));
+      if (routeLine){
+        routeLine.setStyle({
+          weight: routeWeightForZoom(z),
+          dashArray: dashArrayForZoom(z)
+        });
+      }
+    }
 
     Object.entries(places).forEach(([key, p]) => {
-      const marker = L.circleMarker(p.latlng, {
-        radius: 10,
-        color: "#fff",
-        weight: 2,
-        fillColor: pinColors[key],
-        fillOpacity: 1
-      })
-      .addTo(map)
-      .bindTooltip(p.name, { direction: "top", offset: [0, -8] })
-      .on('click', () => {
-        stopTourIfRunning();
-        if (key === "experience") {
-          travelTo(key);
-          setupTimeline(); // show timeline slider
-        } else {
-          travelTo(key);
-        }
-      });
-
-      pinLayers[key] = marker;
+      const m = L.circleMarker(p.latlng, {
+        radius: pinRadiusForZoom(map.getZoom()),
+        color:"#fff",
+        weight:2,
+        fillColor:p.color,
+        fillOpacity:1
+      }).addTo(map)
+        .bindTooltip(p.name, { direction:"top", offset:[0,-8] })
+        .on("click", () => {
+          stopTour();
+          travelTo(key); // ALWAYS triggers travel
+        });
+      pins[key] = m;
     });
 
-    // ---------------- FEATURE 2: TIMELINE SLIDER ----------------
-    function setupTimeline(){
-      const slider = document.getElementById('timeline');
-      const yearLabel = document.getElementById('timelineYear');
+    map.on("zoomend", applyPinSizing);
 
-      slider.min = 0;
-      slider.max = experienceStops.length - 1;
-      slider.value = experienceStops.length - 1;
-
-      function renderStop(idx, animateTravel = true){
-        const stop = experienceStops[idx];
-        yearLabel.textContent = stop.year;
-
-        // Build Experience panel content + include stop content
-        const base = (viewMode === "recruiter") ? places.experience.recruiterBody : places.experience.engineerBody;
-        const stopHtml = (viewMode === "recruiter") ? stop.recruiterBody : stop.engineerBody;
-        const html = `
-          ${base}
-          <p style="margin-top:10px"><b>${stop.year}</b> — ${stop.city}</p>
-          ${stopHtml}
-        `;
-        openPanel("experience", html);
-
-        // Move travel marker to the stop city
-        if (animateTravel){
-          const fromKey = currentKey; // could be experience or others
-          const from = (fromKey === "experience")
-            ? travelMarker.getLatLng()
-            : L.latLng(places[fromKey].latlng[0], places[fromKey].latlng[1]);
-          const to = stop.latlng;
-
-          // update emoji based on distance
-          const el = document.getElementById("travelIcon");
-          if (el) el.textContent = chooseTravelEmoji([from.lat, from.lng], to);
-
-          // route + animation using latlng arrays
-          const route = buildRoute([from.lat, from.lng], to);
-
-          if (routeLine) map.removeLayer(routeLine);
-          routeLine = L.polyline(route, { weight: 5, opacity: 0.85, dashArray: "8,10" }).addTo(map);
-          map.flyToBounds(routeLine.getBounds().pad(0.25), { duration: 0.8 });
-
-          const path = densify(route, 240);
-          if (animId) cancelAnimationFrame(animId);
-          animateAlong(path, 1700, () => {
-            currentKey = "experience";
-            map.flyTo(to, 5, { duration: 0.6 });
-          });
-        } else {
-          map.flyTo(stop.latlng, 5, { duration: 0.6 });
-        }
-      }
-
-      slider.oninput = () => renderStop(Number(slider.value), true);
-      renderStop(Number(slider.value), false);
-    }
-
-    // ---------------- FEATURE 3: SEARCH HIGHLIGHT ----------------
-    const searchBox = document.getElementById('searchBox');
-    const searchHint = document.getElementById('searchHint');
-
-    function normalize(s){ return (s || "").toLowerCase().trim(); }
-
-    function applySearch(q){
-      q = normalize(q);
-      if (!q){
-        searchHint.textContent = "";
-        Object.entries(pinLayers).forEach(([k, m]) => m.setStyle({ radius: 10, fillOpacity: 1 }));
-        return;
-      }
-
-      let matches = 0;
-      Object.entries(places).forEach(([k, p]) => {
-        const hit = p.keywords.some(kw => kw.includes(q)) || p.name.toLowerCase().includes(q);
-        if (hit){ matches++; }
-        pinLayers[k].setStyle({
-          radius: hit ? 14 : 8,
-          fillOpacity: hit ? 1 : 0.35
-        });
-      });
-
-      searchHint.textContent = `${matches} match${matches === 1 ? "" : "es"}`;
-      // If exactly 1 match, auto travel there
-      if (matches === 1){
-        const target = Object.keys(places).find(k => {
-          const p = places[k];
-          return p.keywords.some(kw => kw.includes(q)) || p.name.toLowerCase().includes(q);
-        });
-        if (target) travelTo(target);
-      }
-    }
-
-    searchBox.addEventListener('input', (e) => applySearch(e.target.value));
-
-    // ---------------- FEATURE 4: HEATMAP OVERLAY ----------------
-    // Simple overlay circles: bigger + more opaque = stronger
-    const heatLayer = L.layerGroup();
-    const heatData = [
-      { latlng: [32.7767, -96.7970], label: "AWS + SQL", radius: 48000, opacity: 0.40 },
-      { latlng: [40.7128, -74.0060], label: "Spark + Pipelines", radius: 52000, opacity: 0.35 },
-      { latlng: [34.0522, -118.2437], label: "Projects", radius: 62000, opacity: 0.30 },
-      { latlng: [33.7490, -84.3880], label: "Collaboration", radius: 52000, opacity: 0.25 }
-    ];
-
-    heatData.forEach(h => {
-      const c = L.circle(h.latlng, {
-        radius: h.radius,
-        stroke: false,
-        fillOpacity: h.opacity
-      }).bindTooltip(h.label, { direction: "top" });
-      heatLayer.addLayer(c);
-    });
-
-    function toggleHeat(){
-      heatOn = !heatOn;
-      document.getElementById('heatBtn').textContent = heatOn ? "🔥 Heatmap ON" : "🔥 Heatmap";
-      if (heatOn) heatLayer.addTo(map);
-      else map.removeLayer(heatLayer);
-    }
-
-    // ---------------- FEATURE 1: TOUR MODE ----------------
-    const tourOrder = ["resume", "projects", "skills", "experience", "contact"];
-    let tourIndex = 0;
-
-    function startTour(){
-      tourOn = true;
-      document.getElementById('tourBtn').textContent = "⏸ Tour";
-      tourIndex = 0;
-
-      function step(){
-        if (!tourOn) return;
-        const key = tourOrder[tourIndex % tourOrder.length];
-
-        if (key === "experience"){
-          travelTo("experience");
-          setupTimeline(); // shows slider + renders last stop
-        } else {
-          travelTo(key);
-        }
-
-        tourIndex++;
-        tourTimer = setTimeout(step, 3200);
-      }
-      step();
-    }
-
-    function stopTourIfRunning(){
-      if (!tourOn) return;
-      tourOn = false;
-      document.getElementById('tourBtn').textContent = "▶ Tour";
-      if (tourTimer) clearTimeout(tourTimer);
-      tourTimer = null;
-    }
-
-    function toggleTour(){
-      if (tourOn) stopTourIfRunning();
-      else startTour();
-    }
-
-    // ---------------- MODE TOGGLE (Recruiter vs Engineer) ----------------
-    function toggleMode(){
-      viewMode = (viewMode === "recruiter") ? "engineer" : "recruiter";
-      document.getElementById('modeBtn').textContent = (viewMode === "recruiter") ? "👔 Recruiter" : "🧑‍💻 Engineer";
-
-      // refresh current panel content
-      if (document.getElementById('panel').style.display === 'block'){
-        if (currentKey === "experience"){
-          setupTimeline();
-        } else {
-          openPanel(currentKey);
-        }
-      }
-    }
-
-    // ---------------- THEME TOGGLE (Light/Dark) ----------------
+    // ---------- THEME ----------
+    let isDark = false;
     function toggleTheme(){
       isDark = !isDark;
-      document.body.classList.toggle('dark', isDark);
-      document.getElementById('themeBtn').textContent = isDark ? "☀️ Light" : "🌙 Dark";
-
-      // swap tiles
+      document.body.classList.toggle("dark", isDark);
+      document.getElementById("themeBtn").textContent = isDark ? "☀️ Light" : "🌙 Dark";
       if (isDark){
         if (map.hasLayer(lightTiles)) map.removeLayer(lightTiles);
         if (!map.hasLayer(darkTiles)) darkTiles.addTo(map);
@@ -841,19 +389,44 @@
       }
     }
 
-    // ---------------- HOOK UP BUTTONS ----------------
-    document.getElementById('tourBtn').addEventListener('click', toggleTour);
-    document.getElementById('heatBtn').addEventListener('click', toggleHeat);
-    document.getElementById('modeBtn').addEventListener('click', () => { stopTourIfRunning(); toggleMode(); });
-    document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+    // ---------- TOUR ----------
+    let tourOn = false;
+    let tourTimer = null;
+    const tourOrder = ["resume","projects","skills","experience","contact"];
 
-    // Orientation/map sizing fix
-    window.addEventListener('resize', () => setTimeout(() => map.invalidateSize(), 150));
+    function startTour(){
+      tourOn = true;
+      document.getElementById("tourBtn").textContent = "⏸ Tour";
+      let i = 0;
 
-    // Default open
-    openPanel('resume');
-    map.flyTo(places.resume.latlng, 5, { duration: 0.8 });
+      const step = () => {
+        if (!tourOn) return;
+        if (isTraveling){
+          tourTimer = setTimeout(step, 250);
+          return;
+        }
+        travelTo(tourOrder[i % tourOrder.length]);
+        i++;
+        tourTimer = setTimeout(step, 2200);
+      };
+      step();
+    }
+
+    function stopTour(){
+      tourOn = false;
+      document.getElementById("tourBtn").textContent = "▶ Tour";
+      if (tourTimer) clearTimeout(tourTimer);
+      tourTimer = null;
+    }
+
+    document.getElementById("tourBtn").addEventListener("click", () => tourOn ? stopTour() : startTour());
+    document.getElementById("themeBtn").addEventListener("click", toggleTheme);
+
+    // ---------- INIT ----------
+    refreshMapSize();
+    applyPinSizing();
+    openPanel("resume");
+    map.setView(places.resume.latlng, 5, { animate:false });
   </script>
 </body>
 </html>
-

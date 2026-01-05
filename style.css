@@ -615,3 +615,26 @@ body.light .badge{
   border-color: rgba(125,211,252,.28);
   box-shadow: 0 18px 45px rgba(125,211,252,.14), var(--shadow);
 }
+
+/* =========================
+   FIX: Tech stack visibility
+========================= */
+
+/* Dark mode – keep soft but readable */
+.tags span{
+  color: rgba(231,238,252,.88);
+  font-weight: 600;
+}
+
+/* Light mode – force strong contrast */
+body.light .tags span{
+  color: rgba(11,18,32,.85);
+  background: rgba(11,18,32,.06);
+  border-color: rgba(11,18,32,.18);
+}
+
+/* Optional: make tech stack pop slightly on hover */
+.tags span:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,0,0,.10);
+}

@@ -4,6 +4,18 @@
    ========================================================= */
 
 /* ---------- Theme tokens ---------- */
+html, body{
+  height:100%;
+}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(99,102,241,0.18), transparent 40%),
+    radial-gradient(1000px 500px at 90% 20%, rgba(56,189,248,0.18), transparent 40%),
+    radial-gradient(900px 500px at 50% 90%, rgba(167,139,250,0.18), transparent 40%),
+    #f7f8ff !important;
+}
 :root{
   --bg:#ffffff;
   --text:#111;

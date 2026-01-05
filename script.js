@@ -58,7 +58,7 @@ chips.forEach((chip) => {
 
 // ---------- Typing effect ----------
 const typedEl = document.getElementById("typed");
-const text = "Senior Data Engineer · Systems Builder · Problem Solver";
+const text = "Data Engineer · Analytics & Business Intelligence";
 let i = 0;
 
 function type() {

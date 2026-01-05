@@ -1,12 +1,27 @@
-// ---------- Theme toggle ----------
+// ===============================
+// Theme Toggle (Dark / Light)
+// ===============================
 const themeBtn = document.getElementById("themeBtn");
-const savedTheme = localStorage.getItem("theme");
-if (savedTheme === "dark") document.body.classList.add("dark");
+const body = document.body;
 
+// Load saved theme
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "light") {
+  body.classList.add("light");
+}
+
+// Toggle theme on click
 themeBtn.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+  body.classList.toggle("light");
+
+  // Save preference
+  if (body.classList.contains("light")) {
+    localStorage.setItem("theme", "light");
+  } else {
+    localStorage.setItem("theme", "dark");
+  }
 });
+
 
 // ---------- Reveal on scroll ----------
 const reveals = document.querySelectorAll(".reveal");
@@ -19,24 +34,28 @@ const io = new IntersectionObserver((entries) => {
 
 reveals.forEach(el => io.observe(el));
 
-// ---------- Scroll progress + back-to-top ----------
+// ===============================
+// Scroll Progress Bar
+// ===============================
 const progressBar = document.getElementById("progressBar");
-const toTop = document.getElementById("toTop");
-
-function onScroll() {
-  const doc = document.documentElement;
-  const scrollTop = doc.scrollTop;
-  const scrollHeight = doc.scrollHeight - doc.clientHeight;
-  const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+window.addEventListener("scroll", () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
   progressBar.style.width = `${progress}%`;
+});
 
-  if (scrollTop > 500) toTop.classList.add("show");
-  else toTop.classList.remove("show");
-}
-window.addEventListener("scroll", onScroll);
-onScroll();
+// ===============================
+// Back to Top Button
+// ===============================
+const toTop = document.getElementById("toTop");
+window.addEventListener("scroll", () => {
+  toTop.style.display = window.scrollY > 300 ? "block" : "none";
+});
+toTop.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
 
-toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
 // ---------- Project filters ----------
 const chips = document.querySelectorAll(".chip");

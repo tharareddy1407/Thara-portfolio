@@ -1,4 +1,5 @@
-/* style.css */
+/* style.css (FULL - corrected + consistent layout + wide project support) */
+
 /* ---------- Base / Theme ---------- */
 :root{
   --bg1:#0f172a;
@@ -8,16 +9,17 @@
   --muted:rgba(231,238,252,.78);
 
   --card:rgba(255,255,255,.06);
-  --card2:rgba(255,255,255,.08);
+  --card2:rgba(255,255,255,.09);
   --border:rgba(255,255,255,.12);
 
   --shadow:0 16px 40px rgba(0,0,0,.35);
 
-  --accent: rgba(125,211,252,.9); /* soft cyan */
-  --accent2: rgba(167,139,250,.9); /* soft violet */
+  --accent: rgba(125,211,252,.92);
+  --accent2: rgba(167,139,250,.92);
 
   --pillBg: rgba(255,255,255,.08);
   --pillBgHover: rgba(255,255,255,.12);
+
   --chipBg: rgba(255,255,255,.08);
   --chipActive: rgba(125,211,252,.18);
 
@@ -38,7 +40,7 @@ body{
   overflow-x:hidden;
 }
 
-/* Optional theme toggle support (if your script adds/removes .light) */
+/* Light mode (works with body.classList.toggle('light')) */
 body.light{
   --bg1:#f7f8fb;
   --bg2:#eef2ff;
@@ -46,8 +48,8 @@ body.light{
   --text:#0b1220;
   --muted:rgba(11,18,32,.72);
 
-  --card:rgba(255,255,255,.75);
-  --card2:rgba(255,255,255,.88);
+  --card:rgba(255,255,255,.78);
+  --card2:rgba(255,255,255,.92);
   --border:rgba(11,18,32,.10);
 
   --shadow:0 14px 34px rgba(0,0,0,.12);
@@ -56,7 +58,7 @@ body.light{
   --pillBgHover: rgba(255,255,255,.95);
 
   --chipBg: rgba(255,255,255,.70);
-  --chipActive: rgba(59,130,246,.16);
+  --chipActive: rgba(59,130,246,.14);
 }
 
 /* ---------- Layout ---------- */
@@ -266,6 +268,11 @@ body.light{
   padding: 1.2rem 1.2rem 1.1rem;
 }
 
+/* ✅ Make a project look like your "Real-Time Map Tracking" full-width card */
+.project.wide{
+  grid-column: 1 / -1;
+}
+
 .projectTop{
   display:flex;
   align-items:center;
@@ -314,7 +321,7 @@ body.light{
 .link{
   color: var(--text);
   text-decoration:none;
-  font-weight:600;
+  font-weight:700;
   position:relative;
 }
 .link::after{
@@ -363,7 +370,7 @@ body.light{
 }
 
 .k{
-  font-weight:700;
+  font-weight:800;
   color: var(--text);
 }
 .v{
@@ -402,23 +409,22 @@ body.light{
   background: rgba(255,255,255,.14);
 }
 
-/* ---------- Reveal (works with your existing script) ---------- */
-.reveal{
-  opacity: 1; /* if your JS controls reveal, it can override this */
-}
+/* ---------- Reveal (safe default) ---------- */
+.reveal{ opacity: 1; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 980px){
-  .projectGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cards{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .projectGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .contactGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .project.wide{ grid-column: 1 / -1; }
 }
 
 @media (max-width: 640px){
   .top-row{ flex-direction:column; align-items:flex-start; }
   .title{ font-size: 2.15rem; }
-  .projectGrid{ grid-template-columns: 1fr; }
   .cards{ grid-template-columns: 1fr; }
+  .projectGrid{ grid-template-columns: 1fr; }
   .contactGrid{ grid-template-columns: 1fr; }
   .container{ width: calc(100% - 1.25rem); }
 }

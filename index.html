@@ -1,11 +1,11 @@
-<!-- index.html -->
+<!-- index.html (FULL - corrected) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thara Reddy Kankanala – Portfolio</title>
-  <meta name="description" content="Thara Reddy Kankanala — Data Engineer focused on analytics & business intelligence. Projects, skills, education, and contact." />
+  <meta name="description" content="Thara Reddy Kankanala — Data Engineer focused on analytics & business intelligence. Projects, experience, skills, education, and contact." />
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -46,7 +46,7 @@
 
   <main class="container">
 
-    <!-- About -->
+    <!-- 1) About -->
     <section id="about" class="section reveal">
       <h2 class="sectionTitle">About</h2>
       <p class="muted">
@@ -70,7 +70,7 @@
       </div>
     </section>
 
-    <!-- Experience (minimal) -->
+    <!-- 2) Experience (minimal) -->
     <section id="experience" class="section reveal">
       <h2 class="sectionTitle">Experience</h2>
 
@@ -92,10 +92,11 @@
       </div>
     </section>
 
-    <!-- Projects -->
+    <!-- 3) Projects -->
     <section id="projects" class="section reveal">
       <div class="projectsHead">
         <h2 class="sectionTitle">Projects</h2>
+
         <div class="projectFilters" aria-label="Project filters">
           <button class="chip active" data-filter="all" type="button">All</button>
           <button class="chip" data-filter="systems" type="button">Systems</button>
@@ -105,79 +106,73 @@
       </div>
 
       <div class="projectGrid">
-  <article class="project hover" data-type="product systems">
-    <div class="projectTop">
-      <h3>Smart Drive-Thru Ordering Platform</h3>
-    </div>
+        <!-- Wide card: make it look like Real-Time Map Tracking -->
+        <article class="project hover wide" data-type="product systems">
+          <div class="projectTop">
+            <h3>Smart Drive-Thru Ordering Platform</h3>
+          </div>
 
-    <p class="muted">
-      Replaces traditional drive-thru ordering that requires rolling down windows
-      and handling payments in cold or rainy weather. Enables phone-call or
-      mobile-based ordering with digital payment completed before pickup,
-      opening the car window only once.
-    </p>
+          <p class="muted">
+            Replaces traditional drive-thru ordering that requires rolling down windows and handling payments
+            in cold or rainy weather. Enables phone-call or mobile-based ordering with digital payment completed
+            before pickup, opening the car window only once.
+          </p>
 
-    <p class="muted">
-      <strong>Impact:</strong> Reduced ordering friction and manual errors by
-      eliminating verbal ordering and hand-out payment, improving order accuracy
-      and customer experience.
-    </p>
+          <p class="muted">
+            <strong>Impact:</strong> Reduced ordering friction and manual errors by eliminating verbal ordering and
+            hand-out payment, improving order accuracy and customer experience.
+          </p>
 
-    <div class="tags">
-      <span>Python</span>
-      <span>REST APIs</span>
-      <span>System Design</span>
-      <span>Digital Payments</span>
-      <span>Cloud Deployment</span>
-    </div>
+          <div class="tags">
+            <span>Python</span>
+            <span>REST APIs</span>
+            <span>System Design</span>
+            <span>Digital Payments</span>
+            <span>Cloud Deployment</span>
+          </div>
 
-    <div class="projectActions">
-      <a class="link"
-         href="https://easypay-kb8f.onrender.com"
-         target="_blank"
-         rel="noopener">
-        Live Demo
-      </a>
-      <a class="link"
-         href="https://github.com/tharareddy1407/Smart-Drive-Thru-Ordering-Mobile-Payment-Platform/tree/main"
-         target="_blank"
-         rel="noopener">
-        GitHub
-      </a>
-    </div>
-  </article>
-</div>
-
+          <div class="projectActions">
+            <a class="link" href="https://easypay-kb8f.onrender.com" target="_blank" rel="noopener">Live Demo</a>
+            <a class="link" href="https://github.com/tharareddy1407/Smart-Drive-Thru-Ordering-Mobile-Payment-Platform/tree/main" target="_blank" rel="noopener">GitHub</a>
+          </div>
         </article>
 
-        <article class="project hover" data-type="systems">
+        <!-- Wide card (your existing style) -->
+        <article class="project hover wide" data-type="systems">
           <div class="projectTop">
             <h3>Real-Time Map Tracking</h3>
             <span class="badge">Demo</span>
           </div>
+
           <p class="muted">
             Interactive map tour with smooth transitions, click-to-move routing, and performance-focused rendering.
           </p>
+
           <div class="tags">
             <span>Maps</span><span>Performance</span><span>UI</span>
           </div>
+
           <div class="projectActions">
             <a class="link" href="https://map-portfolio.onrender.com/" target="_blank" rel="noopener">Live Demo</a>
             <a class="link" href="https://github.com/tharareddy1407" target="_blank" rel="noopener">GitHub</a>
           </div>
         </article>
 
+        <!-- Normal card (half/third width) -->
         <article class="project hover" data-type="data">
           <div class="projectTop">
             <h3>Pipeline Optimization</h3>
             <span class="badge">Impact</span>
           </div>
+
           <p class="muted">
             Designed pipeline improvements focused on reliability, validation, and faster time-to-insight for stakeholders.
           </p>
+
           <div class="tags">
             <span>ETL</span><span>Cloud</span><span>Analytics</span>
           </div>
+
           <div class="projectActions">
             <a class="link" href="https://github.com/tharareddy1407" target="_blank" rel="noopener">Write-up</a>
             <a class="link" href="https://github.com/tharareddy1407" target="_blank" rel="noopener">GitHub</a>
@@ -186,7 +181,7 @@
       </div>
     </section>
 
-    <!-- Skills (grouped, senior-friendly) -->
+    <!-- 4) Skills -->
     <section id="skills" class="section reveal">
       <h2 class="sectionTitle">Skills</h2>
 
@@ -218,16 +213,17 @@
       </div>
     </section>
 
-    <!-- Education -->
+    <!-- 5) Education -->
     <section id="education" class="section reveal">
       <h2 class="sectionTitle">Education</h2>
+
       <div class="card hover">
         <h3>Master of Science in Information Systems</h3>
         <p class="muted">University of Texas at Arlington</p>
       </div>
     </section>
 
-    <!-- Contact -->
+    <!-- 6) Contact -->
     <section id="contact" class="section reveal">
       <h2 class="sectionTitle">Contact</h2>
 

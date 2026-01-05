@@ -1,6 +1,8 @@
-/* style.css (FULL - corrected + consistent layout + wide project support) */
+/* style.css (FULL - rewritten, corrected spacing + smooth responsiveness) */
 
-/* ---------- Base / Theme ---------- */
+/* =========================
+   Base / Theme Tokens
+========================= */
 :root{
   --bg1:#0f172a;
   --bg2:#020617;
@@ -27,8 +29,13 @@
   --radius2:22px;
 
   --container: 980px;
+
+  /* ✅ spacing controls (fix big gaps) */
+  --padY: 2.2rem;        /* container top/bottom */
+  --sectionGap: 3rem;    /* spacing between sections */
 }
 
+/* Global reset */
 *{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; }
 body{
@@ -40,7 +47,7 @@ body{
   overflow-x:hidden;
 }
 
-/* Light mode (works with body.classList.toggle('light')) */
+/* Light mode */
 body.light{
   --bg1:#f7f8fb;
   --bg2:#eef2ff;
@@ -61,25 +68,40 @@ body.light{
   --chipActive: rgba(59,130,246,.14);
 }
 
-/* ---------- Layout ---------- */
+/* =========================
+   Layout
+========================= */
 .container{
   width: min(var(--container), calc(100% - 2rem));
   margin: 0 auto;
-  padding: 2.5rem 0;
+  padding: var(--padY) 0;
 }
 
+/* ✅ Important fix: don’t add extra top padding before About */
+main.container{
+  padding-top: 0;
+}
+
+/* ✅ Reduce gap between sections */
 .section{
-  margin: 5.2rem 0;
+  margin: var(--sectionGap) 0;
+}
+
+/* Optional: make first section a bit closer */
+#about{
+  margin-top: 1.6rem;
 }
 
 .sectionTitle{
   font-size: 2.05rem;
   line-height: 1.1;
-  margin: 0 0 1.6rem 0;
+  margin: 0 0 1.35rem 0; /* slightly tighter */
   letter-spacing: .2px;
 }
 
-/* ---------- Top progress bar ---------- */
+/* =========================
+   Top progress bar
+========================= */
 #progressBar{
   position: fixed;
   left:0; top:0;
@@ -90,7 +112,9 @@ body.light{
   box-shadow: 0 0 18px rgba(125,211,252,.35);
 }
 
-/* ---------- Header ---------- */
+/* =========================
+   Header (Hero)
+========================= */
 .top-row{
   display:flex;
   align-items:flex-start;
@@ -119,13 +143,15 @@ body.light{
 @keyframes blink{ 50%{ opacity:0; } }
 
 .heroLine{
-  margin: 1.4rem 0 1.6rem;
+  margin: 1.2rem 0 1.35rem; /* ✅ tighter */
   font-size: 1.05rem;
   color: var(--muted);
   max-width: 62ch;
 }
 
-/* ---------- Buttons / Links ---------- */
+/* =========================
+   Buttons / Links
+========================= */
 .controls{
   display:flex;
   align-items:center;
@@ -156,7 +182,9 @@ body.light{
   border-color: rgba(255,255,255,.18);
 }
 
-/* ---------- Quick links pills ---------- */
+/* =========================
+   Quick links pills
+========================= */
 .quickLinks{
   display:flex;
   flex-wrap:wrap;
@@ -181,7 +209,9 @@ body.light{
   box-shadow: var(--shadow);
 }
 
-/* ---------- Cards grid ---------- */
+/* =========================
+   Cards / Surfaces
+========================= */
 .cards{
   display:grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -223,7 +253,9 @@ body.light{
   border-color: rgba(255,255,255,.18);
 }
 
-/* ---------- Projects ---------- */
+/* =========================
+   Projects
+========================= */
 .projectsHead{
   display:flex;
   align-items:flex-end;
@@ -268,7 +300,6 @@ body.light{
   padding: 1.2rem 1.2rem 1.1rem;
 }
 
-/* ✅ Make a project look like your "Real-Time Map Tracking" full-width card */
 .project.wide{
   grid-column: 1 / -1;
 }
@@ -339,7 +370,9 @@ body.light{
   transform: scaleX(1);
 }
 
-/* ---------- Contact ---------- */
+/* =========================
+   Contact
+========================= */
 .contactCard{
   padding: 1.2rem;
 }
@@ -378,9 +411,11 @@ body.light{
   font-size:.95rem;
 }
 
-/* ---------- Footer ---------- */
+/* =========================
+   Footer
+========================= */
 .footer{
-  padding: 2.5rem 0 1rem;
+  padding: 2.2rem 0 1rem;
   border-top: 1px solid var(--border);
 }
 .footer p{
@@ -388,7 +423,9 @@ body.light{
   color: var(--muted);
 }
 
-/* ---------- Back to top button ---------- */
+/* =========================
+   Back to top button
+========================= */
 #toTop{
   position: fixed;
   right: 18px;
@@ -400,7 +437,7 @@ body.light{
   background: rgba(255,255,255,.10);
   color: var(--text);
   cursor: pointer;
-  display: none; /* shown by JS */
+  display: none;
   transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
 }
 #toTop:hover{
@@ -409,11 +446,19 @@ body.light{
   background: rgba(255,255,255,.14);
 }
 
-/* ---------- Reveal (safe default) ---------- */
+/* =========================
+   Reveal (safe default)
+========================= */
 .reveal{ opacity: 1; }
 
-/* ---------- Responsive ---------- */
+/* =========================
+   Responsive
+========================= */
 @media (max-width: 980px){
+  :root{
+    --padY: 2rem;
+    --sectionGap: 2.6rem;
+  }
   .cards{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .projectGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .contactGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -421,6 +466,10 @@ body.light{
 }
 
 @media (max-width: 640px){
+  :root{
+    --padY: 1.7rem;
+    --sectionGap: 2.2rem;
+  }
   .top-row{ flex-direction:column; align-items:flex-start; }
   .title{ font-size: 2.15rem; }
   .cards{ grid-template-columns: 1fr; }

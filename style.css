@@ -681,3 +681,36 @@ body.light .tags a{
 .tags a:nth-child(4n+2){ background: rgba(167,139,250,.12); }
 .tags a:nth-child(4n+3){ background: rgba(34,197,94,.10); }
 .tags a:nth-child(4n){   background: rgba(251,146,60,.10); }
+
+/* =========================
+   Premium Impact Highlight
+========================= */
+
+.impact{
+  position: relative;
+  margin-top: .85rem;
+  padding: .85rem 1rem;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(125,211,252,.14),
+    rgba(167,139,250,.10),
+    transparent 60%
+  );
+  border-left: 3px solid rgba(125,211,252,.75);
+}
+
+.impact strong{
+  color: var(--text);
+}
+
+/* Light mode tuning */
+body.light .impact{
+  background: linear-gradient(
+    90deg,
+    rgba(59,130,246,.12),
+    rgba(99,102,241,.08),
+    transparent 60%
+  );
+  border-left-color: rgba(59,130,246,.65);
+}

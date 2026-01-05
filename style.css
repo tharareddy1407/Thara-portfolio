@@ -477,3 +477,141 @@ main.container{
   .contactGrid{ grid-template-columns: 1fr; }
   .container{ width: calc(100% - 1.25rem); }
 }
+
+/* =========================
+   Color Boost Patch (paste at END)
+========================= */
+
+/* 1) Add richer accents (keeps your current vibe) */
+:root{
+  --accent3: rgba(34,197,94,.92);   /* green */
+  --accent4: rgba(251,146,60,.92);  /* orange */
+  --accentGrad: linear-gradient(90deg, var(--accent), var(--accent2));
+  --accentGrad2: linear-gradient(90deg, var(--accent2), var(--accent3));
+  --accentGrad3: linear-gradient(90deg, var(--accent3), var(--accent4));
+}
+
+/* 2) Subtle colorful glow behind the top section */
+.container{
+  position: relative;
+}
+.container::before{
+  content:"";
+  position:absolute;
+  top:-120px;
+  left:50%;
+  transform: translateX(-50%);
+  width: min(1100px, 120%);
+  height: 260px;
+  background:
+    radial-gradient(closest-side, rgba(125,211,252,.20), transparent 70%),
+    radial-gradient(closest-side, rgba(167,139,250,.16), transparent 70%),
+    radial-gradient(closest-side, rgba(34,197,94,.10), transparent 70%);
+  filter: blur(10px);
+  pointer-events:none;
+  z-index:-1;
+}
+
+/* 3) Make section titles feel more “designed” */
+.sectionTitle{
+  position: relative;
+}
+.sectionTitle::after{
+  content:"";
+  display:block;
+  width:72px;
+  height:3px;
+  margin-top:10px;
+  border-radius:999px;
+  background: var(--accentGrad);
+  opacity:.95;
+}
+
+/* 4) Hero title: a very light gradient pop (still readable) */
+.title{
+  background: linear-gradient(90deg, rgba(231,238,252,1), rgba(231,238,252,.82));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color: transparent;
+}
+body.light .title{
+  background: linear-gradient(90deg, rgba(11,18,32,1), rgba(11,18,32,.70));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color: transparent;
+}
+
+/* 5) Project / card hover gets a colorful edge */
+.hover:hover{
+  box-shadow: 0 18px 55px rgba(125,211,252,.16), 0 16px 40px rgba(0,0,0,.25);
+  border-color: rgba(125,211,252,.28);
+}
+
+/* 6) Badges: colorful dot + nicer background */
+.badge{
+  position: relative;
+  padding-left: .55rem;
+  background: rgba(125,211,252,.10);
+  border-color: rgba(125,211,252,.22);
+  color: rgba(231,238,252,.85);
+}
+.badge::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  display:inline-block;
+  margin-right:8px;
+  background: var(--accentGrad);
+  vertical-align: middle;
+}
+body.light .badge{
+  background: rgba(59,130,246,.10);
+  border-color: rgba(59,130,246,.20);
+  color: rgba(11,18,32,.72);
+}
+
+/* 7) Tags: rotate soft colors (no harsh rainbow) */
+.tags span{
+  color: rgba(231,238,252,.82);
+}
+.tags span:nth-child(4n+1){
+  background: rgba(125,211,252,.12);
+  border-color: rgba(125,211,252,.22);
+}
+.tags span:nth-child(4n+2){
+  background: rgba(167,139,250,.12);
+  border-color: rgba(167,139,250,.22);
+}
+.tags span:nth-child(4n+3){
+  background: rgba(34,197,94,.10);
+  border-color: rgba(34,197,94,.20);
+}
+.tags span:nth-child(4n){
+  background: rgba(251,146,60,.10);
+  border-color: rgba(251,146,60,.20);
+}
+
+/* 8) Chips: more “active” and more colorful hover */
+.chip:hover{
+  border-color: rgba(125,211,252,.26);
+}
+.chip.active{
+  background: rgba(125,211,252,.16);
+  border-color: rgba(125,211,252,.38);
+  box-shadow: 0 12px 28px rgba(125,211,252,.12);
+}
+
+/* 9) Links: keep your underline but add subtle gradient text hover */
+.link:hover{
+  background: var(--accentGrad);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color: transparent;
+}
+
+/* 10) Buttons: slightly more “premium” hover */
+.btn:hover, .pill:hover{
+  border-color: rgba(125,211,252,.28);
+  box-shadow: 0 18px 45px rgba(125,211,252,.14), var(--shadow);
+}

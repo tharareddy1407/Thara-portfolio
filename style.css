@@ -638,3 +638,46 @@ body.light .tags span{
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(0,0,0,.10);
 }
+
+/* =========================
+   Clickable Tech Stack Tags
+========================= */
+
+.tags a{
+  display:inline-flex;
+  align-items:center;
+  font-size:.82rem;
+  padding:.28rem .55rem;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  text-decoration:none;
+  font-weight:600;
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    background .18s ease,
+    border-color .18s ease;
+}
+
+/* Hover = clickable signal */
+.tags a:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(125,211,252,.18);
+  border-color: rgba(125,211,252,.35);
+  background: rgba(125,211,252,.12);
+}
+
+/* Light mode contrast fix */
+body.light .tags a{
+  background: rgba(11,18,32,.06);
+  border-color: rgba(11,18,32,.18);
+  color: rgba(11,18,32,.88);
+}
+
+/* Optional: per-tag soft color rotation */
+.tags a:nth-child(4n+1){ background: rgba(125,211,252,.12); }
+.tags a:nth-child(4n+2){ background: rgba(167,139,250,.12); }
+.tags a:nth-child(4n+3){ background: rgba(34,197,94,.10); }
+.tags a:nth-child(4n){   background: rgba(251,146,60,.10); }

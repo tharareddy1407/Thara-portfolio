@@ -1,23 +1,25 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thara Reddy Kankanala – Portfolio</title>
-  <meta name="description" content="Thara Reddy Kankanala — Data Engineer specializing in analytics and business intelligence. Projects, skills, and contact." />
+  <meta name="description" content="Thara Reddy Kankanala — Data Engineer focused on analytics & business intelligence. Projects, skills, education, and contact." />
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
   <!-- Top progress bar -->
-  <div id="progressBar"></div>
+  <div id="progressBar" aria-hidden="true"></div>
 
   <header class="container reveal">
     <div class="top-row">
       <div>
         <h1 class="title">Thara Reddy Kankanala</h1>
         <p class="subtitle">
-          <span id="typed"></span><span class="cursor">▍</span>
+          <span id="typed">Data Engineer · Analytics &amp; Business Intelligence</span>
+          <span class="cursor" aria-hidden="true">▍</span>
         </p>
       </div>
 
@@ -32,9 +34,9 @@
       financial analysis, and business-facing data solutions.
     </p>
 
-    <!-- Corrected quick links order to match page flow -->
     <div class="quickLinks">
       <a class="pill" href="#about">About</a>
+      <a class="pill" href="#experience">Experience</a>
       <a class="pill" href="#projects">Projects</a>
       <a class="pill" href="#skills">Skills</a>
       <a class="pill" href="#education">Education</a>
@@ -44,7 +46,7 @@
 
   <main class="container">
 
-    <!-- 1) About -->
+    <!-- About -->
     <section id="about" class="section reveal">
       <h2 class="sectionTitle">About</h2>
       <p class="muted">
@@ -55,7 +57,7 @@
       <div class="cards">
         <div class="card hover">
           <h3>What I do</h3>
-          <p class="muted">Data pipelines, system design, automation, dashboards, and operational analytics.</p>
+          <p class="muted">Data platforms, pipelines, system design, automation, dashboards, and operational analytics.</p>
         </div>
         <div class="card hover">
           <h3>How I work</h3>
@@ -68,35 +70,37 @@
       </div>
     </section>
 
-    <!-- 5) Experience -->
-    <section id="Professional Experience" class="section reveal">
-  <h2 class="sectionTitle">Professional Experience</h2>
+    <!-- Experience (minimal) -->
+    <section id="experience" class="section reveal">
+      <h2 class="sectionTitle">Experience</h2>
 
-  <div class="card hover">
-    <h3>Capital One</h3>
-    <p class="muted">Data Engineer III · 2024 – Present</p>
-  </div>
+      <div class="cards">
+        <div class="card hover">
+          <h3>Capital One</h3>
+          <p class="muted">Data Engineer III · 2024 – Present</p>
+        </div>
 
-  <div class="card hover">
-    <h3>SiriusXM</h3>
-    <p class="muted">Senior Data Engineer · 2022 – 2024</p>
-  </div>
+        <div class="card hover">
+          <h3>SiriusXM</h3>
+          <p class="muted">Senior Data Engineer · 2022 – 2024</p>
+        </div>
 
-  <div class="card hover">
-    <h3>Bank of America</h3>
-    <p class="muted">Senior Data Engineer · 2018 – 2021</p>
-  </div>
-</section>
+        <div class="card hover">
+          <h3>Bank of America</h3>
+          <p class="muted">Senior Data Engineer · 2018 – 2021</p>
+        </div>
+      </div>
+    </section>
 
-    <!-- 2) Projects (moved directly after About) -->
+    <!-- Projects -->
     <section id="projects" class="section reveal">
       <div class="projectsHead">
         <h2 class="sectionTitle">Projects</h2>
-        <div class="projectFilters">
-          <button class="chip active" data-filter="all">All</button>
-          <button class="chip" data-filter="systems">Systems</button>
-          <button class="chip" data-filter="data">Data</button>
-          <button class="chip" data-filter="product">Product</button>
+        <div class="projectFilters" aria-label="Project filters">
+          <button class="chip active" data-filter="all" type="button">All</button>
+          <button class="chip" data-filter="systems" type="button">Systems</button>
+          <button class="chip" data-filter="data" type="button">Data</button>
+          <button class="chip" data-filter="product" type="button">Product</button>
         </div>
       </div>
 
@@ -107,20 +111,15 @@
             <span class="badge">Case Study</span>
           </div>
           <p class="muted">
-            <p class="muted">
-  Replaces traditional drive-thru ordering that requires rolling down windows
-  and handling payments in bad weather by enabling phone-call or mobile-based
-  ordering with digital payment completed before pickup.
-</p>
+            Replaces traditional drive-thru ordering that requires rolling down windows and handling payments
+            in cold or rainy weather. Enables phone-call or mobile-based ordering with digital payment completed
+            before pickup, opening the car window only once.
           </p>
           <div class="tags">
             <span>Python</span>
             <span>REST APIs</span>
-            <span>Backend System Design</span>
-            <span>Phone Call Integration</span>
+            <span>System Design</span>
             <span>Digital Payments</span>
-            <span>Real-Time Order Processing</span>
-            <span>Web UI</span>
             <span>Cloud Deployment</span>
           </div>
           <div class="projectActions">
@@ -135,14 +134,14 @@
             <span class="badge">Demo</span>
           </div>
           <p class="muted">
-            Interactive map tour with optimized rendering, smooth transitions, and click-to-move.
+            Interactive map tour with smooth transitions, click-to-move routing, and performance-focused rendering.
           </p>
           <div class="tags">
             <span>Maps</span><span>Performance</span><span>UI</span>
           </div>
           <div class="projectActions">
-            <a class="link" href="#" target="_blank" rel="noopener">Live Demo</a>
-            <a class="link" href="#" target="_blank" rel="noopener">GitHub</a>
+            <a class="link" href="https://map-portfolio.onrender.com/" target="_blank" rel="noopener">Live Demo</a>
+            <a class="link" href="https://github.com/tharareddy1407" target="_blank" rel="noopener">GitHub</a>
           </div>
         </article>
 
@@ -152,37 +151,52 @@
             <span class="badge">Impact</span>
           </div>
           <p class="muted">
-            Reduced processing time and improved reliability by redesigning ingestion + transforms.
+            Designed pipeline improvements focused on reliability, validation, and faster time-to-insight for stakeholders.
           </p>
           <div class="tags">
             <span>ETL</span><span>Cloud</span><span>Analytics</span>
           </div>
           <div class="projectActions">
-            <a class="link" href="#" target="_blank" rel="noopener">Write-up</a>
-            <a class="link" href="#" target="_blank" rel="noopener">GitHub</a>
+            <a class="link" href="https://github.com/tharareddy1407" target="_blank" rel="noopener">Write-up</a>
+            <a class="link" href="https://github.com/tharareddy1407" target="_blank" rel="noopener">GitHub</a>
           </div>
         </article>
       </div>
     </section>
 
-    <!-- 3) Skills -->
+    <!-- Skills (grouped, senior-friendly) -->
     <section id="skills" class="section reveal">
       <h2 class="sectionTitle">Skills</h2>
-      <ul class="skills">
-        <li>Cloud Platforms: AWS, Azure, GCP</li>
-        <li>Data Engineering & Platform Architecture</li>
-        <li>Python · PySpark · Advanced SQL</li>
-        <li>ETL / ELT Pipelines & Enterprise Data Migration</li>
-        <li>Streaming & Event-Driven Data Systems</li>
-        <li>Data Modeling, Governance & Regulatory Compliance</li>
-        <li>Analytics, KPI Development & Decision Support</li>
-        <li>Dashboards & Business Intelligence (QuickSight, Tableau, Power BI)</li>
-        <li>Business, Financial & Risk Data Analysis</li>
-        <li>Automation, CI/CD, Cost Optimization & Observability</li>
-      </ul>
+
+      <div class="cards">
+        <div class="card hover">
+          <h3>Cloud & Platforms</h3>
+          <p class="muted">AWS · Azure · GCP · Snowflake</p>
+        </div>
+
+        <div class="card hover">
+          <h3>Data Engineering</h3>
+          <p class="muted">ETL / ELT · Streaming · Data Migration · Pipelines</p>
+        </div>
+
+        <div class="card hover">
+          <h3>Analytics & BI</h3>
+          <p class="muted">Advanced SQL · KPI Design · QuickSight · Tableau · Power BI</p>
+        </div>
+
+        <div class="card hover">
+          <h3>Governance & Compliance</h3>
+          <p class="muted">Data Modeling · RBAC · GDPR · SOX · PCI-DSS</p>
+        </div>
+
+        <div class="card hover">
+          <h3>Automation & DevOps</h3>
+          <p class="muted">CI/CD · Monitoring · Cost Optimization · Observability</p>
+        </div>
+      </div>
     </section>
 
-    <!-- 4) Education -->
+    <!-- Education -->
     <section id="education" class="section reveal">
       <h2 class="sectionTitle">Education</h2>
       <div class="card hover">
@@ -191,59 +205,31 @@
       </div>
     </section>
 
-     <!-- 5) Experience -->
-    <section id="Professional Experience" class="section reveal">
-  <h2 class="sectionTitle">Professional Experience</h2>
-
-  <div class="card hover">
-    <h3>Capital One</h3>
-    <p class="muted">Data Engineer III · 2024 – Present</p>
-  </div>
-
-  <div class="card hover">
-    <h3>SiriusXM</h3>
-    <p class="muted">Senior Data Engineer · 2022 – 2024</p>
-  </div>
-
-  <div class="card hover">
-    <h3>Bank of America</h3>
-    <p class="muted">Senior Data Engineer · 2018 – 2021</p>
-  </div>
-</section>
-
-
-    <!-- 5) Contact -->
     <!-- Contact -->
-<section id="contact" class="section reveal">
-  <h2 class="sectionTitle">Contact</h2>
+    <section id="contact" class="section reveal">
+      <h2 class="sectionTitle">Contact</h2>
 
-  <div class="contactCard hover">
-    <p class="muted">Let’s talk. Fastest way: email.</p>
+      <div class="contactCard hover">
+        <p class="muted">Let’s talk. Fastest way: email.</p>
 
-    <div class="contactGrid">
-      <a class="contactItem" href="mailto:kankanalatharareddy@gmail.com">
-        <span class="k">Email</span>
-        <span class="v">kankanalatharareddy@gmail.com</span>
-      </a>
+        <div class="contactGrid">
+          <a class="contactItem" href="mailto:kankanalatharareddy@gmail.com">
+            <span class="k">Email</span>
+            <span class="v">kankanalatharareddy@gmail.com</span>
+          </a>
 
-      <a class="contactItem"
-         href="https://github.com/tharareddy1407?tab=repositories"
-         target="_blank"
-         rel="noopener">
-        <span class="k">GitHub</span>
-        <span class="v">github.com/tharareddy1407</span>
-      </a>
+          <a class="contactItem" href="https://github.com/tharareddy1407?tab=repositories" target="_blank" rel="noopener">
+            <span class="k">GitHub</span>
+            <span class="v">github.com/tharareddy1407</span>
+          </a>
 
-      <a class="contactItem"
-         href="https://www.linkedin.com/in/tharareddykankanala"
-         target="_blank"
-         rel="noopener">
-        <span class="k">LinkedIn</span>
-        <span class="v">linkedin.com/in/tharareddykankanala</span>
-      </a>
-    </div>
-  </div>
-</section>
+          <a class="contactItem" href="https://www.linkedin.com/in/tharareddykankanala" target="_blank" rel="noopener">
+            <span class="k">LinkedIn</span>
+            <span class="v">linkedin.com/in/tharareddykankanala</span>
+          </a>
+        </div>
+      </div>
+    </section>
 
     <footer class="footer reveal">
       <p>© 2026 Thara Reddy Kankanala · Built with clean design + fast interactions</p>

@@ -242,6 +242,11 @@ main.container{
   line-height: 1.55;
 }
 
+/* Add spacing after About paragraph (before cards) */
+#about > .muted{
+  margin-bottom: 32px;
+}
+
 /* Hover polish */
 .hover{
   transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;

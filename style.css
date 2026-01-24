@@ -724,3 +724,13 @@ body.light .impact{
   margin-top: 14px;
   margin-bottom: 22px; /* 👈 THIS adds space before About buttons */
 }
+
+.netflix-n{
+  display: inline-block;
+  font-weight: 900;
+  font-size: 1.1em;
+  margin-right: 6px;
+  color: #e50914; /* Netflix red */
+  font-family: Arial, Helvetica, sans-serif;
+}
+

@@ -719,3 +719,8 @@ body.light .impact{
   );
   border-left-color: rgba(59,130,246,.65);
 }
+
+.new-portfolio{
+  margin-top: 14px;
+  margin-bottom: 22px; /* 👈 THIS adds space before About buttons */
+}

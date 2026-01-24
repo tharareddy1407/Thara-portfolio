@@ -734,3 +734,10 @@ body.light .impact{
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.netflix-icon{
+  width: 18px;
+  height: auto;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
